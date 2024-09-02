@@ -4,7 +4,6 @@ import {
   FormControl,
   FormLabel,
   FormErrorMessage,
-  Spinner,
   Input,
   Container,
   Button,
@@ -24,9 +23,8 @@ const Login = () => {
   const [passwordError, setPasswordError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Validate email and password
     if (!isValidEmail(email)) {
       setEmailError('Veuillez saisir une adresse email valide.');
     } else {
@@ -38,21 +36,28 @@ const Login = () => {
     } else {
       setPasswordError('');
     }
-
-    // Check if there are any errors before submitting
     if (emailError !== '' || passwordError !== '') {
       return;
     }
-
-    // Submit form if both email and password are valid
     setIsSubmitting(true);
-    // Handle form submission here
-    console.log('Email:', email);
-    console.log('Password:', password);
-    // Simulate a delay to demonstrate the loading state
-    setTimeout(() => {
+    try {
+      const response = await fetch('https://lobatin-api.vercel.app/admin/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, password: password }),
+      });
+      if (response.success == false) {
+        throw new Error("Erreur d'authentification");
+      }
+      const datas = await response.json();
+      localStorage.setItem('labatin_admin_access_token', JSON.stringify(datas.data.access_token));
+      localStorage.setItem('labatin_admin_info', datas.data.user._id);
+      window.location.href = '/home';
+    } catch (error) {
+      console.error('Error:', error.message);
+    } finally {
       setIsSubmitting(false);
-    }, 2000);
+    }
   };
 
   const isValidEmail = (email) => {
