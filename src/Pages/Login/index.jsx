@@ -46,7 +46,7 @@ const Login = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, password: password }),
       });
-      if (response.success == false) {
+      if (response.success === false) {
         throw new Error("Erreur d'authentification");
       }
       const datas = await response.json();
