@@ -51,7 +51,8 @@ const Login = () => {
       }
       const datas = await response.json();
       localStorage.setItem('labatin_admin_access_token', JSON.stringify(datas.data.access_token));
-      localStorage.setItem('labatin_admin_info', datas.data.user._id);
+      localStorage.setItem('labatin_admin_id', datas.data.user._id);
+      localStorage.setItem('labatin_admin_info', JSON.stringify(datas.data.user));
       window.location.href = '/home';
     } catch (error) {
       console.error('Error:', error.message);
