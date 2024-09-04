@@ -19,6 +19,7 @@ import {
     FormControl,
     FormLabel,
     Input,
+    Tabs, TabList, TabPanels, Tab, TabPanel
 } from "@chakra-ui/react";
 import CardElement from '../../components/CardElement';
 import TotalUser from "../../components/TotalUser";
@@ -131,20 +132,52 @@ const Home = () => {
                         </Wrap>
                     </Box>
                     <Box mt={4} p={4}>
-                        <SearchBar onSearch={setSearchTerm} />
-                        <Button leftIcon={<AddIcon />} colorScheme='cyan' variant='solid' ml={4} style={{ color: 'white' }} onClick={onOpen}>
-                            Nouvelle licence
-                        </Button>
-                        <DataTable
-                            title="Liste de Films"
-                            columns={columns}
-                            data={filteredItems}
-                            pagination
-                            highlightOnHover
-                            responsive
-                            paginationComponentOptions={paginationOptions}
-                            noDataComponent="Aucune donnée disponible"
-                        />
+                        <Tabs variant='enclosed' colorScheme='white'>
+                            <TabList color='white'>
+                                <Tab>Licences</Tab>
+                                <Tab>Utilisateurs</Tab>
+                                {/* <Tab>Demandes</Tab> */}
+                            </TabList>
+
+                            <TabPanels>
+                                <TabPanel>
+                                    <Box>
+                                        <SearchBar onSearch={setSearchTerm} />
+                                        <Button leftIcon={<AddIcon />} colorScheme='cyan' variant='solid' ml={4} style={{ color: 'white' }} onClick={onOpen}>
+                                            Nouvelle licence
+                                        </Button>
+                                        <DataTable
+                                            title="Liste de Films"
+                                            columns={columns}
+                                            data={filteredItems}
+                                            pagination
+                                            highlightOnHover
+                                            responsive
+                                            paginationComponentOptions={paginationOptions}
+                                            noDataComponent="Aucune donnée disponible"
+                                        />
+                                    </Box>
+                                </TabPanel>
+                                <TabPanel>
+                                    <Box>
+                                        <SearchBar onSearch={setSearchTerm} />
+                                        <Button leftIcon={<AddIcon />} colorScheme='cyan' variant='solid' ml={4} style={{ color: 'white' }} onClick={onOpen}>
+                                            Nouvel utilisateur
+                                        </Button>
+                                        <DataTable
+                                            title="Utilisateurs de l'application"
+                                            columns={columns}
+                                            data={filteredItems}
+                                            pagination
+                                            highlightOnHover
+                                            responsive
+                                            paginationComponentOptions={paginationOptions}
+                                            noDataComponent="Aucune donnée disponible"
+                                        />
+                                    </Box>
+                                </TabPanel>
+                            </TabPanels>
+                        </Tabs>
                     </Box>
                 </Container>
             </Box>
