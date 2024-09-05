@@ -1,5 +1,5 @@
 import { Card, CardBody } from '@chakra-ui/react'
-const CardElement = () => {
+const CardElement = ({totalKey}) => {
   return (
     <>
       <Card
@@ -10,6 +10,7 @@ const CardElement = () => {
       >
         <CardBody>
           <h4><b>Nombre de licence générées</b></h4>
+          <p style={{ textAlign: 'center', marginTop: '1vh', fontSize: '34px' }}> <b> {totalKey} </b> </p>
         </CardBody>
       </Card>
     </>

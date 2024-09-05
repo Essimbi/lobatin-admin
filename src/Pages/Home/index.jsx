@@ -25,49 +25,65 @@ import CardElement from '../../components/CardElement';
 import TotalUser from "../../components/TotalUser";
 import TotalD from "../../components/TotalD";
 import DataTable from 'react-data-table-component';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import SearchBar from "../../components/SearchBar";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import Autocomplete from "../../components/Autocomplete";
 
 const Home = () => {
-    const { isOpen, onOpen, onClose } = useDisclosure()
-    const [data, setData] = useState([
-        {
-            id: 1,
-            title: 'Beetlejuice',
-            year: '1988',
-        },
-        {
-            id: 2,
-            title: 'Ghostbusters',
-            year: '1984',
-        },
-        {
-            id: 3,
-            title: 'Retour vers le futur',
-            year: '1985',
-        },
-    ]);
+    const { isOpen, onOpen, onClose } = useDisclosure();
+
+    // État pour les données
+    const [data, setData] = useState([]);
+    const [totalKey, setTotalKey] = useState(0);
+
+    // Fonction pour récupérer les données depuis l'API
+    useEffect(() => {
+        const fetchData = async () => {
+            const token = JSON.parse(localStorage.getItem('labatin_admin_access_token')); // Récupérer le token depuis le localStorage
+            console.log(token)
+            try {
+                const response = await fetch('https://lobatin-api.vercel.app/key/', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` // Ajouter le token dans les headers
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la requête');
+                }
+    
+                const result = await response.json();
+                setData(result.data); // Mettre à jour les données avec la réponse
+                setTotalKey(result.data.length)
+            } catch (error) {
+                console.error('Erreur lors de la récupération des données:', error);
+            }
+        };
+    
+        fetchData();
+    }, []); // [] assure que l'appel est fait une seule fois lorsque le composant est monté
 
     const handleDelete = (rowId) => {
-        setData(prevData => prevData.filter(item => item.id !== rowId));
+        setData(prevData => prevData.filter(item => item._id !== rowId));
     };
 
     const columns = [
         {
           name: 'Clé de licence',
-          selector: row => row.title,
+          selector: row => row.licence,
           sortable: true,
         },
         {
           name: 'Valide depuis le',
-          selector: row => row.year,
+          selector: row => row.dateCreation,
           sortable: true,
         },
         {
             name: "Date d'expiration",
-            selector: row => row.year,
+            selector: row => row.dateExp,
             sortable: true,
         },
         {
@@ -81,7 +97,7 @@ const Home = () => {
                 <IconButton
                 aria-label='Supprimer'
                 size='sm'
-                onClick={() => handleDelete(row.id)}
+                onClick={() => handleDelete(row._id)}
                 icon={<DeleteIcon />}
                 />
             ),
@@ -98,8 +114,8 @@ const Home = () => {
           item => {
             const searchTermLower = searchTerm.toLowerCase();
             return (
-              item.title.toLowerCase().includes(searchTermLower) ||
-              item.year.includes(searchTermLower)
+              item.dateCreation.toLowerCase().includes(searchTermLower) ||
+              item.dateExp.includes(searchTermLower)
             );
           }
         ),
@@ -127,7 +143,7 @@ const Home = () => {
                                 <TotalD />
                             </WrapItem>
                             <WrapItem>
-                                <CardElement />
+                                <CardElement totalKey={totalKey} />
                             </WrapItem>
                         </Wrap>
                     </Box>
@@ -136,7 +152,6 @@ const Home = () => {
                             <TabList color='white'>
                                 <Tab>Licences</Tab>
                                 <Tab>Utilisateurs</Tab>
-                                {/* <Tab>Demandes</Tab> */}
                             </TabList>
 
                             <TabPanels>
