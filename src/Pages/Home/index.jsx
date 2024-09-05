@@ -77,6 +77,11 @@ const Home = () => {
           sortable: true,
         },
         {
+            name: 'Utilisateur',
+            selector: row => row.user,
+            sortable: true,
+        },
+        {
           name: 'Valide depuis le',
           selector: row => row.dateCreation,
           sortable: true,
@@ -88,7 +93,7 @@ const Home = () => {
         },
         {
             name: 'Statut',
-            selector: row => row.year,
+            selector: row => row.statut,
             sortable: false,
         },
         {
@@ -162,7 +167,7 @@ const Home = () => {
                                             Nouvelle licence
                                         </Button>
                                         <DataTable
-                                            title="Liste de Films"
+                                            title="Clés d'activation"
                                             columns={columns}
                                             data={filteredItems}
                                             pagination
@@ -203,7 +208,17 @@ const Home = () => {
                     <ModalHeader>Générer une nouvelle clé </ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <Autocomplete options={options} />
+                        {/* <Autocomplete options={options} /> */}
+                        <FormControl isRequired mb={4} mt={4}>
+                            <FormLabel>Utilisateur </FormLabel>
+                            <Input type="text" list='options' />
+                        </FormControl>
+                        <datalist id="options">
+                            <option value="Option 1" />
+                            <option value="Option 2" />
+                            <option value="Option 3" />
+                        </datalist>
+
                         <FormControl isRequired mb={4} mt={4}>
                             <FormLabel>Valide à partir du </FormLabel>
                             <Input type="date" />
