@@ -3,7 +3,7 @@ const SearchBar = ({ onSearch }) => {
   return (
     <input
       type="text"
-      placeholder="Rechercher un film..."
+      placeholder="Rechercher..."
       onChange={e => onSearch(e.target.value)}
       style={{
         padding: '8px 12px',
