@@ -13,9 +13,7 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
-    Text,
     useDisclosure,
-    Select,
     FormControl,
     FormLabel,
     Input,
@@ -667,42 +665,65 @@ const Home = () => {
     return (
         <>
             <Box bg='#008582' h='100vh'>
-                <Nav/>
-                <Container maxW='container.xl' mt={4} p={4} mb={4}>
-                    <Box bg="white" w='100%' rounded={10} p={4}>
-                        <Wrap spacing='30px' justify='center'>
-                            <WrapItem>
-                                <TotalUser totalUser={totalUser} />
-                            </WrapItem>
-                            <WrapItem>
-                                <TotalD />
-                            </WrapItem>
-                            <WrapItem>
-                                <CardElement totalKey={totalKey} />
-                            </WrapItem>
-                        </Wrap>
-                    </Box>
-                    <Box mt={4} p={4}>
-                        <Tabs variant='enclosed' colorScheme='white'>
-                           <Skeleton isLoaded={!isLoading}>
-                            <TabList color='white'>
-                                    <Tab>Licences</Tab>
-                                    <Tab>Utilisateurs</Tab>
-                                </TabList>
-                           </Skeleton>
+                <Box position="fixed" top={0} left={0} right={0} zIndex={10} w='100%'>
+                    <Nav />
+                </Box>
+                <Box flex='1' overflowY='auto' mt={24} p={4}>
+                    <Container maxW='container.xl' p={4} mb={4}>
+                        <Box bg="white" w='100%' rounded={10} p={4}>
+                            <Wrap spacing='30px' justify='center'>
+                                <WrapItem>
+                                    <TotalUser totalUser={totalUser} />
+                                </WrapItem>
+                                <WrapItem>
+                                    <TotalD />
+                                </WrapItem>
+                                <WrapItem>
+                                    <CardElement totalKey={totalKey} />
+                                </WrapItem>
+                            </Wrap>
+                        </Box>
+                        <Box mt={4} p={4}>
+                            <Tabs variant='enclosed' colorScheme='white'>
+                            <Skeleton isLoaded={!isLoading}>
+                                <TabList color='white'>
+                                        <Tab>Licences</Tab>
+                                        <Tab>Utilisateurs</Tab>
+                                    </TabList>
+                            </Skeleton>
 
-                            <TabPanels>
-                                <TabPanel>
-                                    <Skeleton isLoaded={!isLoading}>
+                                <TabPanels>
+                                    <TabPanel>
+                                        <Skeleton isLoaded={!isLoading}>
+                                            <Box>
+                                                <SearchBar onSearch={setSearchTerm} />
+                                                <Button leftIcon={<AddIcon />} colorScheme='cyan' variant='solid' ml={4} style={{ color: 'white' }} onClick={onOpenLicenceModal}>
+                                                    Nouvelle licence
+                                                </Button>
+                                                <DataTable
+                                                    title="Clés d'activation"
+                                                    columns={columns}
+                                                    data={filteredItems}
+                                                    pagination
+                                                    highlightOnHover
+                                                    responsive
+                                                    paginationComponentOptions={paginationOptions}
+                                                    noDataComponent="Aucune donnée disponible"
+                                                />
+                                            </Box>
+                                        </Skeleton>
+
+                                    </TabPanel>
+                                    <TabPanel>
                                         <Box>
-                                            <SearchBar onSearch={setSearchTerm} />
-                                            <Button leftIcon={<AddIcon />} colorScheme='cyan' variant='solid' ml={4} style={{ color: 'white' }} onClick={onOpenLicenceModal}>
-                                                Nouvelle licence
+                                            <SearchBar onSearch={setSearchUser} />
+                                            <Button leftIcon={<AddIcon />} colorScheme='cyan' variant='solid' ml={4} style={{ color: 'white' }} onClick={onOpenUserModal}>
+                                                Nouvel utilisateur
                                             </Button>
                                             <DataTable
-                                                title="Clés d'activation"
-                                                columns={columns}
-                                                data={filteredItems}
+                                                title="Utilisateurs de l'application"
+                                                columns={columnsUsers}
+                                                data={filteredUser}
                                                 pagination
                                                 highlightOnHover
                                                 responsive
@@ -710,31 +731,12 @@ const Home = () => {
                                                 noDataComponent="Aucune donnée disponible"
                                             />
                                         </Box>
-                                    </Skeleton>
-
-                                </TabPanel>
-                                <TabPanel>
-                                    <Box>
-                                        <SearchBar onSearch={setSearchUser} />
-                                        <Button leftIcon={<AddIcon />} colorScheme='cyan' variant='solid' ml={4} style={{ color: 'white' }} onClick={onOpenUserModal}>
-                                            Nouvel utilisateur
-                                        </Button>
-                                        <DataTable
-                                            title="Utilisateurs de l'application"
-                                            columns={columnsUsers}
-                                            data={filteredUser}
-                                            pagination
-                                            highlightOnHover
-                                            responsive
-                                            paginationComponentOptions={paginationOptions}
-                                            noDataComponent="Aucune donnée disponible"
-                                        />
-                                    </Box>
-                                </TabPanel>
-                            </TabPanels>
-                        </Tabs>
-                    </Box>
-                </Container>
+                                    </TabPanel>
+                                </TabPanels>
+                            </Tabs>
+                        </Box>
+                    </Container>
+                </Box>
             </Box>
 
             <Modal blockScrollOnMount={false} isOpen={isLicenceModalOpen} onClose={onCloseLicenceModal} isCentered>

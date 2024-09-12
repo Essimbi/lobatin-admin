@@ -19,6 +19,7 @@ const TotalD = () => {
       >
         <CardBody>
         <h4><b>Nouvelles demandes de licences</b></h4>
+        <p style={{ textAlign: 'center', marginTop: '1vh', fontSize: '14px' }}> <b> En cours de développement </b> </p>
         </CardBody>
       </Card>
     </>
