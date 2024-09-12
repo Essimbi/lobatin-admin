@@ -22,7 +22,8 @@ import {
     Tabs, TabList, TabPanels, Tab, TabPanel,
     InputGroup,
     InputRightElement,
-    Skeleton
+    Skeleton,
+    useToast
 } from "@chakra-ui/react";
 import CardElement from '../../components/CardElement';
 import TotalUser from "../../components/TotalUser";
@@ -35,6 +36,7 @@ import { AddIcon, CopyIcon, DeleteIcon, EditIcon, EmailIcon, InfoOutlineIcon, Ph
 const Home = () => {
     const { isOpen: isLicenceModalOpen, onOpen: onOpenLicenceModal, onClose: onCloseLicenceModal } = useDisclosure();
     const { isOpen: isUserModalOpen, onOpen: onOpenUserModal, onClose: onCloseUserModal } = useDisclosure();
+    const toast = useToast();
 
     const [data, setData] = useState([]);
     const [totalKey, setTotalKey] = useState();
@@ -113,8 +115,17 @@ const Home = () => {
               method: 'DELETE',
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             });
-            
-            if (response.success === false) {
+            const dataResponse = response.json()
+            if (dataResponse.success === false) {
+                toast({
+                    title: 'Info',
+                    description: "Erreur de suppression de la clé",
+                    status: 'warning',
+                    duration: 3000,
+                    variant: 'top-accent',
+                    position: 'top-right',
+                    isClosable: true,
+                })
                 throw new Error("Erreur de suppression de la clé");
             }
             
@@ -126,13 +137,22 @@ const Home = () => {
                 }
             });
             
+            const result = await response2.json();
             if (response2.success === false) {
                 throw new Error('Erreur lors de la requête');
             }
 
-            const result = await response2.json();
             setData(result.data); // Mettre à jour les données avec la réponse
             setTotalKey(result.data.length)
+            toast({
+                title: 'Succès',
+                description: "Clé supprimée avec succès",
+                status: 'success',
+                duration: 3000,
+                variant: 'top-accent',
+                position: 'top-right',
+                isClosable: true,
+            })
         } catch (error) {
             console.error('Error:', error.message);
         }
@@ -144,8 +164,17 @@ const Home = () => {
               method: 'DELETE',
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             });
-            
-            if (response.success === false) {
+            const dataR = response.json()
+            if (dataR.success === false) {
+                toast({
+                    title: 'Info',
+                    description: dataR.message,
+                    status: 'warning',
+                    duration: 3000,
+                    variant: 'top-accent',
+                    position: 'top-right',
+                    isClosable: true,
+                })
                 throw new Error("Erreur de suppression de l'utilisateur");
             }
             
@@ -157,13 +186,30 @@ const Home = () => {
                 }
             });
             
-            if (response2.success === false) {
+            const result = await response2.json();
+            if (result.success === false) {
+                toast({
+                    title: 'Info',
+                    description: result.message,
+                    status: 'warning',
+                    duration: 3000,
+                    variant: 'top-accent',
+                    position: 'top-right',
+                    isClosable: true,
+                })
                 throw new Error('Erreur lors de la requête');
             }
-
-            const result = await response2.json();
             setUserData(result.data);
             setTotalUser(result.data.length)
+            toast({
+                title: 'Succès',
+                description: "Utilisateur supprimé avec succès",
+                status: 'success',
+                duration: 3000,
+                variant: 'top-accent',
+                position: 'top-right',
+                isClosable: true,
+            })
         } catch (error) {
             console.error('Error:', error.message);
         }
@@ -174,10 +220,26 @@ const Home = () => {
         if (licenceKey) {
             navigator.clipboard.writeText(licenceKey)
                 .then(() => {
-                    alert('La clé a été copiée dans le presse-papier');
+                    toast({
+                        title: 'Succès',
+                        description: "Clé copiée dans le presse-papier",
+                        status: 'success',
+                        duration: 3000,
+                        variant: 'top-accent',
+                        position: 'top-right',
+                        isClosable: true,
+                    })
                 })
                 .catch((error) => {
-                    console.error('Erreur lors de la copie dans le presse-papier:', error);
+                    toast({
+                        title: 'Erreure',
+                        description: "Erreur lors de la copie dans le presse-papier \n "+ error,
+                        status: 'error',
+                        duration: 3000,
+                        variant: 'top-accent',
+                        position: 'top-right',
+                        isClosable: true,
+                    })
                 });
         } else {
             console.log('Clé de licence non trouvée');
@@ -360,8 +422,17 @@ const Home = () => {
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
               body: JSON.stringify(bodyRequest),
             });
-            
-            if (response.success === false) {
+            const dataR = response.json()
+            if (dataR.success === false) {
+                toast({
+                    title: 'Info',
+                    description: dataR.message,
+                    status: 'warning',
+                    duration: 3000,
+                    variant: 'top-accent',
+                    position: 'top-right',
+                    isClosable: true,
+                })
                 throw new Error("Erreur de génération de clé");
             }
             
@@ -373,13 +444,31 @@ const Home = () => {
                 }
             });
             
-            if (response2.success === false) {
+            const result = await response2.json();
+            if (result.success === false) {
+                toast({
+                    title: 'Info',
+                    description: result.message,
+                    status: 'warning',
+                    duration: 3000,
+                    variant: 'top-accent',
+                    position: 'top-right',
+                    isClosable: true,
+                })
                 throw new Error('Erreur lors de la requête');
             }
 
-            const result = await response2.json();
             setData(result.data);
             setTotalKey(result.data.length)
+            toast({
+                title: 'Succès',
+                description: "Nouvelle clé créée",
+                status: 'success',
+                duration: 3000,
+                variant: 'top-accent',
+                position: 'top-right',
+                isClosable: true,
+            })
         } catch (error) {
             console.error('Error:', error.message);
         } finally {
@@ -406,9 +495,18 @@ const Home = () => {
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
               body: JSON.stringify(bodyRequest),
             });
-            
-            if (response.success === false) {
-                throw new Error("Erreur de génération de clé");
+            const dataR = response.json();
+            if (dataR.success === false) {
+                toast({
+                    title: 'Info',
+                    description: dataR.message,
+                    status: 'warning',
+                    duration: 3000,
+                    variant: 'top-accent',
+                    position: 'top-right',
+                    isClosable: true,
+                })
+                throw new Error("Erreur d'enrégistrement d'un nouvel utilisateur");
             }
             
             const response2 = await fetch('https://lobatin-api.vercel.app/user/', {
@@ -418,14 +516,31 @@ const Home = () => {
                     'Authorization': `Bearer ${token}` // Ajouter le token dans les headers
                 }
             });
-            
-            if (response2.success === false) {
+            const result = await response2.json();
+            if (result.success === false) {
+                toast({
+                    title: 'Info',
+                    description: result.message,
+                    status: 'warning',
+                    duration: 3000,
+                    variant: 'top-accent',
+                    position: 'top-right',
+                    isClosable: true,
+                })
                 throw new Error('Erreur lors de la requête');
             }
 
-            const result = await response2.json();
             setUserData(result.data);
             setTotalUser(result.data.length)
+            toast({
+                title: 'Succès',
+                description: "Nouvel utilisateur enrégistré",
+                status: 'success',
+                duration: 3000,
+                variant: 'top-accent',
+                position: 'top-right',
+                isClosable: true,
+            })
         } catch (error) {
             console.error('Error:', error.message);
         } finally {
@@ -453,8 +568,17 @@ const Home = () => {
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
               body: JSON.stringify(bodyRequest),
             });
-            
-            if (response.success === false) {
+            const dataR = response.json()
+            if (dataR.success === false) {
+                toast({
+                    title: 'Info',
+                    description: dataR.message,
+                    status: 'warning',
+                    duration: 3000,
+                    variant: 'top-accent',
+                    position: 'top-right',
+                    isClosable: true,
+                })
                 throw new Error("Erreur de génération de clé");
             }
             
@@ -466,12 +590,29 @@ const Home = () => {
                 }
             });
             
-            if (response2.success === false) {
+            const result = await response2.json();
+            if (result.success === false) {
+                toast({
+                    title: 'Info',
+                    description: result.message,
+                    status: 'warning',
+                    duration: 3000,
+                    variant: 'top-accent',
+                    position: 'top-right',
+                    isClosable: true,
+                })
                 throw new Error('Erreur lors de la requête');
             }
-
-            const result = await response2.json();
             setUserData(result.data);
+            toast({
+                title: 'Succès',
+                description: "Utilisateur mis à jour avec succès",
+                status: 'success',
+                duration: 3000,
+                variant: 'top-accent',
+                position: 'top-right',
+                isClosable: true,
+            })
         } catch (error) {
             console.error('Error:', error.message);
         } finally {
