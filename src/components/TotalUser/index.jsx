@@ -4,7 +4,7 @@ const TotalUser = ({totalUser}) => {
     <>
       <Card
         w="20vw"
-        h="10vh"
+        h="15vh"
         bg="#008582"
         color='white'
       >

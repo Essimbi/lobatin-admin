@@ -23,7 +23,7 @@ import {
 } from '@chakra-ui/react'
 import logo from '../../images/logo.png'
 import { FaSignOutAlt } from 'react-icons/fa';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { EmailIcon, InfoOutlineIcon, LockIcon, PhoneIcon } from '@chakra-ui/icons';
 const Nav = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -32,8 +32,61 @@ const Nav = () => {
         localStorage.clear();
         window.location.href = '/';
     };
+    const [dataUser, setDataUser] = useState({});
     const user = JSON.parse(localStorage.getItem('labatin_admin_info'))
+    const token = JSON.parse(localStorage.getItem('labatin_admin_access_token'));
     const userName = user.name +" "+ user.secname
+    const [formUser, setFormUser] = useState({name: '', secname: '', phoneNumber: '', email: ''})
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const updateUserInfoSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        try {
+            const response = await fetch('https://lobatin-api.vercel.app/admin/update', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+              body: JSON.stringify(formUser),
+            });
+            
+            if (response.success === false) {
+                throw new Error("Erreur de mise à jour des informations personnelles");
+            }
+
+            const result = await response.json();
+            setDataUser(result.data);
+            setFormUser({name: result.data.name, secname: result.data.secname, phoneNumber: result.data.phoneNumber, email: result.data.email})
+            localStorage.setItem('labatin_admin_info', JSON.stringify(formUser));
+        } catch (error) {
+            console.error('Error:', error.message);
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('https://lobatin-api.vercel.app/admin/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la requête');
+                }
+    
+                const result = await response.json();
+                setDataUser(result.data);
+                setFormUser({name: result.data.name, secname: result.data.secname, phoneNumber: result.data.phoneNumber, email: result.data.email})
+            } catch (error) {
+                console.error('Erreur lors de la récupération des données:', error);
+            }
+        };
+    
+        fetchData();
+    }, []);
   return (
     <div>
         <Box bg='white' w='100%' p={4} display='flex' justifyContent='space-between'>
@@ -67,57 +120,59 @@ const Nav = () => {
                     <Heading size='sm'>Mettre à jour mes infos</Heading>
                 </CardHeader>
                 <CardBody mt={-6}>
-                    <Text> <b>Nom: </b> Toto</Text>
+                    <Text> <b>Nom: </b> {dataUser.name}</Text>
                     <hr />
-                    <Text mt={3}> <b>Prénom: </b> Tyty</Text>
+                    <Text mt={3}> <b>Prénom: </b> {dataUser.secname}</Text>
                     <hr />
-                    <Text mt={3}> <b>Téléphone: </b> 652101010</Text>
+                    <Text mt={3}> <b>Téléphone: </b> {dataUser.phoneNumber}</Text>
                     <hr />
-                    <Text mt={3}> <b>Adresse mail: </b> tuto@gmail.com</Text>
+                    <Text mt={3}> <b>Adresse mail: </b> {dataUser.email}</Text>
                 </CardBody>
             </Card>
             <Card mt={4}>
                 <CardHeader>
-                    <Heading size='sm'>Informations personnelles</Heading>
+                    <Heading size='sm'>Mettre à jour mes informations personnelles</Heading>
                 </CardHeader>
                 <CardBody mt={-6}>
-                    <FormControl marginBottom={2} >
-                        <FormLabel>Nom</FormLabel>
-                        <InputGroup size='sm'>
-                            <InputRightElement>
-                                <InfoOutlineIcon color='gray.300' />
-                            </InputRightElement>
-                            <Input type='text' sx={{ '&:focus': { borderColor: '#008582', boxShadow: '0 0 0 1px teal.500',},}}/>
-                        </InputGroup>
-                    </FormControl>
-                    <FormControl marginBottom={2} >
-                        <FormLabel>Prénom</FormLabel>
-                        <InputGroup size='sm'>
-                            <InputRightElement>
-                                <InfoOutlineIcon color='gray.300' />
-                            </InputRightElement>
-                            <Input type='text' sx={{ '&:focus': { borderColor: '#008582', boxShadow: '0 0 0 1px teal.500',},}}/>
-                        </InputGroup>
-                    </FormControl>
-                    <FormControl marginBottom={2}>
-                        <FormLabel>Téléphone</FormLabel>
-                        <InputGroup size='sm'>
-                            <InputRightElement>
-                                <PhoneIcon color='gray.300' />
-                            </InputRightElement>
-                            <Input type='tel' sx={{ '&:focus': { borderColor: '#008582', boxShadow: '0 0 0 1px teal.500',},}}/>
-                        </InputGroup>
-                    </FormControl>
-                    <FormControl mb={2}>
-                        <FormLabel>Adresse mail</FormLabel>
-                        <InputGroup size='sm'>
-                            <InputRightElement>
-                                <EmailIcon color='gray.300' />
-                            </InputRightElement>
-                            <Input type='email' sx={{ '&:focus': { borderColor: '#008582', boxShadow: '0 0 0 1px teal.500',},}}/>
-                        </InputGroup>
-                    </FormControl>
-                    <Button mt={2} variant='solid' colorScheme="teal" size='sm'>Valider</Button>
+                    <form onSubmit={updateUserInfoSubmit}>
+                        <FormControl marginBottom={2} >
+                            <FormLabel>Nom</FormLabel>
+                            <InputGroup size='sm'>
+                                <InputRightElement>
+                                    <InfoOutlineIcon color='gray.300' />
+                                </InputRightElement>
+                                <Input type='text' sx={{ '&:focus': { borderColor: '#008582', boxShadow: '0 0 0 1px teal.500',},}} required value={formUser.name} onChange={(e) => { setFormUser((v) => { return {...v, name: e.target.value  } }) }}/>
+                            </InputGroup>
+                        </FormControl>
+                        <FormControl marginBottom={2} >
+                            <FormLabel>Prénom</FormLabel>
+                            <InputGroup size='sm'>
+                                <InputRightElement>
+                                    <InfoOutlineIcon color='gray.300' />
+                                </InputRightElement>
+                                <Input type='text' sx={{ '&:focus': { borderColor: '#008582', boxShadow: '0 0 0 1px teal.500',},}} required value={formUser.secname} onChange={(e) => { setFormUser((v) => { return {...v, secname: e.target.value  } }) }}/>
+                            </InputGroup>
+                        </FormControl>
+                        <FormControl marginBottom={2}>
+                            <FormLabel>Téléphone</FormLabel>
+                            <InputGroup size='sm'>
+                                <InputRightElement>
+                                    <PhoneIcon color='gray.300' />
+                                </InputRightElement>
+                                <Input type='tel' sx={{ '&:focus': { borderColor: '#008582', boxShadow: '0 0 0 1px teal.500',},}} required value={formUser.phoneNumber} onChange={(e) => { setFormUser((v) => { return {...v, phoneNumber: e.target.value  } }) }}/>
+                            </InputGroup>
+                        </FormControl>
+                        <FormControl mb={2}>
+                            <FormLabel>Adresse mail</FormLabel>
+                            <InputGroup size='sm'>
+                                <InputRightElement>
+                                    <EmailIcon color='gray.300' />
+                                </InputRightElement>
+                                <Input type='email' sx={{ '&:focus': { borderColor: '#008582', boxShadow: '0 0 0 1px teal.500',},}} required value={formUser.email} onChange={(e) => { setFormUser((v) => { return {...v, email: e.target.value  } }) }}/>
+                            </InputGroup>
+                        </FormControl>
+                        <Button mt={2} variant='solid' colorScheme="teal" size='sm' type='submit' isLoading={isSubmitting} loadingText='Valider'>Valider</Button>
+                    </form>
                 </CardBody>
             </Card>
             <Card mt={4}>

@@ -4,7 +4,7 @@ const CardElement = ({totalKey}) => {
     <>
       <Card
         w="20vw"
-        h="10vh"
+        h="15vh"
         bg='#58c7e4'
         color='white'
       >
