@@ -29,14 +29,19 @@ import CardElement from '../../components/CardElement';
 import TotalUser from "../../components/TotalUser";
 import TotalD from "../../components/TotalD";
 import DataTable from 'react-data-table-component';
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import SearchBar from "../../components/SearchBar";
 import { AddIcon, CopyIcon, DeleteIcon, EditIcon, EmailIcon, InfoOutlineIcon, PhoneIcon } from "@chakra-ui/icons";
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
     const { isOpen: isLicenceModalOpen, onOpen: onOpenLicenceModal, onClose: onCloseLicenceModal } = useDisclosure();
     const { isOpen: isUserModalOpen, onOpen: onOpenUserModal, onClose: onCloseUserModal } = useDisclosure();
     const toast = useToast();
+
+    const navigation = useNavigate(); // Redirection après déconnexion
+    const logoutTimerRef = useRef(null);
+    const [isActive, setIsActive] = useState(true);
 
     const [data, setData] = useState([]);
     const [totalKey, setTotalKey] = useState();
@@ -54,6 +59,37 @@ const Home = () => {
     const [userId, setUserId] = useState('')
     const token = JSON.parse(localStorage.getItem('labatin_admin_access_token'));
     const [isLoading, setIsloading] = useState(true)
+
+    const logout = () => {
+        toast({
+            title: 'Info',
+            description: "Vous avez été déconnecté \n Attente d'activité dépassée",
+            status: 'info',
+            duration: 9000,
+            variant: 'top-accent',
+            position: 'top-right',
+            isClosable: true,
+        })
+        localStorage.clear();
+        setIsActive(false);
+        navigation('/');
+    };
+    
+    const resetTimer = () => {
+        if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+        logoutTimerRef.current = setTimeout(logout, 300000);
+    };
+
+    useEffect(() => {
+        window.addEventListener('mousemove', resetTimer);
+        window.addEventListener('keydown', resetTimer);
+        resetTimer();
+        return () => {
+          clearTimeout(logoutTimerRef.current);
+          window.removeEventListener('mousemove', resetTimer);
+          window.removeEventListener('keydown', resetTimer);
+        };
+    }, []);
 
     useEffect(() => {
         setIsloading(true)
