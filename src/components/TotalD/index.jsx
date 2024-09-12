@@ -4,7 +4,7 @@ const TotalD = () => {
     <>
       <Card
         w="20vw"
-        h="10vh"
+        h="15vh"
         sx={{
           background: 'linear-gradient(270deg, #008582, #58c7e4)',
           backgroundSize: '400% 400%',
