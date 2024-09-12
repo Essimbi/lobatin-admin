@@ -21,11 +21,13 @@ import {
     InputGroup,
     InputRightElement
 } from '@chakra-ui/react'
+import { useToast } from '@chakra-ui/react';
 import logo from '../../images/logo.png'
 import { FaSignOutAlt } from 'react-icons/fa';
 import { useRef, useState, useEffect } from 'react';
 import { EmailIcon, InfoOutlineIcon, LockIcon, PhoneIcon } from '@chakra-ui/icons';
 const Nav = () => {
+    const toast = useToast()
     const { isOpen, onOpen, onClose } = useDisclosure()
     const btnRef = useRef()
     const logout = () => {
@@ -50,16 +52,44 @@ const Nav = () => {
               body: JSON.stringify(formUser),
             });
             
-            if (response.success === false) {
+            const result = await response.json();
+            if (result.success === false) {
+                toast({
+                    title: 'Attention',
+                    description: result.message,
+                    status: 'info',
+                    duration: 5000,
+                    variant: 'top-accent',
+                    position: 'top-right',
+                    isClosable: true,
+                })
                 throw new Error("Erreur de mise à jour des informations personnelles");
             }
 
-            const result = await response.json();
+            toast({
+                title: 'Succès',
+                description: "Mise à des informations personnelles réussie",
+                status: 'success',
+                duration: 5000,
+                variant: 'top-accent',
+                position: 'top-right',
+                isClosable: true,
+            })
+
             setDataUser(result.data);
             setFormUser({name: result.data.name, secname: result.data.secname, phoneNumber: result.data.phoneNumber, email: result.data.email})
             localStorage.setItem('labatin_admin_info', JSON.stringify(formUser));
         } catch (error) {
             console.error('Error:', error.message);
+            toast({
+                title: 'Erreur',
+                description: error.message,
+                status: 'error',
+                duration: 5000,
+                variant: 'top-accent',
+                position: 'top-right',
+                isClosable: true,
+            })
         } finally {
             setIsSubmitting(false);
         }
@@ -74,13 +104,39 @@ const Nav = () => {
               body: JSON.stringify(formPassword),
             });
             
-            if (response.success === false) {
+            const result = await response.json();
+            if (result.success === false) {
+                toast({
+                    title: 'Attention',
+                    description: result.message,
+                    status: 'warning',
+                    duration: 5000,
+                    variant: 'top-accent',
+                    position: 'top-right',
+                    isClosable: true,
+                })
                 throw new Error("Erreur de mise à jour des informations personnelles");
             }
-
-            const result = await response.json();
+            toast({
+                title: 'Succès',
+                description: "Mot de passe mis à jour avec succès",
+                status: 'success',
+                duration: 5000,
+                variant: 'top-accent',
+                position: 'top-right',
+                isClosable: true,
+            })
         } catch (error) {
             console.error('Error:', error.message);
+            toast({
+                title: 'Erreur',
+                description: error.message,
+                status: 'error',
+                duration: 5000,
+                variant: 'top-accent',
+                position: 'top-right',
+                isClosable: true,
+            })
         } finally {
             setIsSubmitting2(false);
             setFormPassword({ old_password: '', new_password: '' })
