@@ -10,6 +10,7 @@ import {
   Img,
   InputGroup,
   InputRightElement,
+  useToast
 } from '@chakra-ui/react'
 import { EmailIcon, LockIcon } from '@chakra-ui/icons'
 import './style.css'
@@ -22,6 +23,7 @@ const Login = () => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const toast = useToast()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,13 +48,31 @@ const Login = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, password: password }),
       });
-      if (response.success === false) {
+      const datas = await response.json();
+      if (datas.success == false) {
+        toast({
+          title: 'Info',
+          description: datas.message,
+          status: 'warning',
+          duration: 9000,
+          variant: 'top-accent',
+          position: 'top-right',
+          isClosable: true,
+        })
         throw new Error("Erreur d'authentification");
       }
-      const datas = await response.json();
       localStorage.setItem('labatin_admin_access_token', JSON.stringify(datas.data.access_token));
       localStorage.setItem('labatin_admin_id', datas.data.user._id);
       localStorage.setItem('labatin_admin_info', JSON.stringify(datas.data.user));
+      toast({
+        title: 'Succès',
+        description: "Connexion réussie",
+        status: 'success',
+        duration: 9000,
+        variant: 'top-accent',
+        position: 'top-right',
+        isClosable: true,
+      })
       window.location.href = '/home';
     } catch (error) {
       console.error('Error:', error.message);

@@ -1,5 +1,10 @@
-import { Card, CardBody } from '@chakra-ui/react'
+import { Card, CardBody, SkeletonText } from '@chakra-ui/react'
+import { useEffect, useState } from 'react'
 const CardElement = ({totalKey}) => {
+  const [isLoading, setIsloading] = useState(true)
+  useEffect(() => {
+    if (totalKey != undefined) setIsloading(false)
+  })
   return (
     <>
       <Card
@@ -10,7 +15,9 @@ const CardElement = ({totalKey}) => {
       >
         <CardBody>
           <h4><b>Nombre de licence générées</b></h4>
-          <p style={{ textAlign: 'center', marginTop: '1vh', fontSize: '34px' }}> <b> {totalKey} </b> </p>
+          <SkeletonText isLoaded={!isLoading}>
+            <p style={{ textAlign: 'center', marginTop: '1vh', fontSize: '34px' }}> <b> {totalKey} </b> </p>
+          </SkeletonText>
         </CardBody>
       </Card>
     </>
