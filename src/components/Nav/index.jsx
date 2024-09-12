@@ -38,6 +38,8 @@ const Nav = () => {
     const userName = user.name +" "+ user.secname
     const [formUser, setFormUser] = useState({name: '', secname: '', phoneNumber: '', email: ''})
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSubmitting2, setIsSubmitting2] = useState(false);
+    const [formPassword, setFormPassword] = useState({ old_password: '', new_password: '' })
     const updateUserInfoSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -60,6 +62,28 @@ const Nav = () => {
             console.error('Error:', error.message);
         } finally {
             setIsSubmitting(false);
+        }
+    }
+    const updateUserPassord = async (e) => {
+        e.preventDefault()
+        setIsSubmitting2(true);
+        try {
+            const response = await fetch('https://lobatin-api.vercel.app/admin/update-password', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+              body: JSON.stringify(formPassword),
+            });
+            
+            if (response.success === false) {
+                throw new Error("Erreur de mise à jour des informations personnelles");
+            }
+
+            const result = await response.json();
+        } catch (error) {
+            console.error('Error:', error.message);
+        } finally {
+            setIsSubmitting2(false);
+            setFormPassword({ old_password: '', new_password: '' })
         }
     }
     useEffect(() => {
@@ -180,25 +204,27 @@ const Nav = () => {
                     <Heading size='sm'>Mettre à jour mon mot de passe</Heading>
                 </CardHeader>
                 <CardBody mt={-6}>
-                    <FormControl marginBottom={2} >
-                        <FormLabel>Mot de passe actuel</FormLabel>
-                        <InputGroup size='sm'>
-                            <InputRightElement>
-                                <LockIcon color='gray.300' />
-                            </InputRightElement>
-                            <Input type='password' sx={{ '&:focus': { borderColor: '#008582', boxShadow: '0 0 0 1px teal.500',},}}/>
-                        </InputGroup>
-                    </FormControl>
-                    <FormControl marginBottom={2} >
-                        <FormLabel>Nouveau mot de passe</FormLabel>
-                        <InputGroup size='sm'>
-                            <InputRightElement>
-                                <LockIcon color='gray.300' />
-                            </InputRightElement>
-                            <Input type='password' sx={{ '&:focus': { borderColor: '#008582', boxShadow: '0 0 0 1px teal.500',},}}/>
-                        </InputGroup>
-                    </FormControl>
-                    <Button mt={2} variant='solid' colorScheme="teal" size='sm'>Mettre à jour</Button>
+                    <form onSubmit={updateUserPassord}>
+                        <FormControl marginBottom={2} >
+                            <FormLabel>Mot de passe actuel</FormLabel>
+                            <InputGroup size='sm'>
+                                <InputRightElement>
+                                    <LockIcon color='gray.300' />
+                                </InputRightElement>
+                                <Input type='password' sx={{ '&:focus': { borderColor: '#008582', boxShadow: '0 0 0 1px teal.500',},}} required value={formPassword.old_password} onChange={(e) => { setFormPassword((v) => { return { ...v, old_password: e.target.value } }) }}/>
+                            </InputGroup>
+                        </FormControl>
+                        <FormControl marginBottom={2} >
+                            <FormLabel>Nouveau mot de passe</FormLabel>
+                            <InputGroup size='sm'>
+                                <InputRightElement>
+                                    <LockIcon color='gray.300' />
+                                </InputRightElement>
+                                <Input type='password' sx={{ '&:focus': { borderColor: '#008582', boxShadow: '0 0 0 1px teal.500',},}} required value={formPassword.new_password} onChange={(e) => { setFormPassword((v) => { return { ...v, new_password: e.target.value } }) }}/>
+                            </InputGroup>
+                        </FormControl>
+                        <Button mt={2} variant='solid' colorScheme="teal" size='sm' type='submit' isLoading={isSubmitting2} loadingText='Mettre à jour'>Mettre à jour</Button>
+                    </form>
                 </CardBody>
             </Card>
           </DrawerBody>
